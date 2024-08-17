@@ -1,0 +1,472 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cichlid's Academic & Personal Homepage</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap');
+
+:root {
+    --primary-color: #3a0ca3;
+    --secondary-color: #f72585;
+    --text-color: #2b2d42;
+    --background-color: #f4eeeb;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+h1, h2, h3 {
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 20px;
+}
+
+.welcome {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-image: url("background1.png");
+    background-size: cover;
+    background-position: center;
+    color: #ffffff;
+    position: relative;
+    transition: background-image 1s ease-in-out;
+}
+
+.welcome::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(205, 198, 198, 0.5);
+}
+
+.welcome-content {
+    position: relative;
+    z-index: 1;
+}
+
+.welcome h1 {
+    font-size: 4rem;
+    background: linear-gradient(45deg,  #ffffff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: gradientAnimation 10s ease infinite;
+}
+
+@keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.typed-text {
+    min-height: 2em;
+    margin: 20px 0;
+    font-size: 1.5rem;
+}
+
+.section {
+    padding: 80px 0;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 1s, transform 1s;
+}
+
+.section.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.quote-container {
+    font-style: italic;
+    text-align: center;
+    margin: 40px 0;
+    min-height: 100px;
+    font-size: 1.2rem;
+    background-color: rgba(230, 209, 209, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.contact-icons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.contact-icons a {
+    font-size: 24px;
+    color: var(--primary-color);
+    transition: color 0.3s;
+}
+
+.contact-icons a:hover {
+    color: var(--secondary-color);
+}
+
+#side-nav {
+    position: fixed;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    z-index: 1000;
+}
+
+#side-nav a {
+    display: block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    margin: 10px 0;
+    transition: background-color 0.3s;
+}
+
+#side-nav a:hover, #side-nav a.active {
+    background-color: var(--secondary-color);
+}
+
+#fireworks-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 1.5s ease-out, transform 1.5s ease-out;
+}
+
+.fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.gradient-text {
+    /* background-image: linear-gradient(45deg,#39ded0,rgb(72, 113, 190),#be68e399,#ed4f59,#d1d168,#58f274,rgb(98, 216, 179)); */
+    background-image: linear-gradient(45deg,#3a0ca3,#f72585,#3a0ca3);
+    background-size: 300%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: gradientMove 5s ease-in-out infinite;
+}
+
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+<body>
+
+<nav id="side-nav">
+    <a href="#welcome" class="active"></a>
+    <a href="#about"></a>
+    <a href="#research"></a>
+    <a href="#publications"></a>
+    <a href="#contact"></a>
+</nav>
+
+<section id="welcome" class="welcome">
+    <div class="welcome-content">
+        <h1 class="gradient-text">Welcome to Cichlid's World</h1>
+        <div class="typed-text"></div>
+    </div>
+</section>
+
+<section id="about" class="section">
+    <div class="container">
+        <h2 class="fade-in">About Me</h2>
+        <p class="fade-in">Hello! I'm Cichlid, an academic passionate about Physics & Science.</p>
+        <p class="fade-in">You can learn more about my background and work through the following links:</p>
+        <ul class="fade-in">
+            <li><a href="https://hyouka.fandom.com/wiki/Mayaka_Ibara" target="_blank">LinkedIn</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Too_Many_Losing_Heroines!" target="_blank">Google Scholar</a></li>
+            <li><a href="https://github.com/cichlider" target="_blank">GitHub</a></li>
+        </ul>
+    </div>
+</section>
+
+<section id="research" class="section">
+    <div class="container">
+        <h2 class="fade-in">Research Interests</h2>
+        <ul>
+            <li class="fade-in">Interest 1: Quantum Mechanics and its Applications</li>
+            <li class="fade-in">Interest 2: Advanced Computational Physics</li>
+            <li class="fade-in">Interest 3: Environmental Impact of Nanotechnology</li>
+        </ul>
+    </div>
+</section>
+
+<section id="publications" class="section">
+    <div class="container">
+        <h2 class="fade-in">Publications</h2>
+        <ul>
+            <li class="fade-in"><a href="https://ys.mihoyo.com/" target="_blank">Publication 1: Title and Link</a></li>
+            <li class="fade-in"><a href="https://ys.mihoyo.com/" target="_blank">Publication 2: Title and Link</a></li>
+            <li class="fade-in"><a href="https://ys.mihoyo.com/" target="_blank">Publication 3: Title and Link</a></li>
+        </ul>
+    </div>
+</section>
+
+<section id="contact" class="section">
+    <div class="container">
+        <div>
+            <h2 class="fade-in">Contact Me</h2>
+        </div>
+            <p class="fade-in">Feel free to reach out for collaborations or inquiries.</p>
+        
+        <div class="contact-icons fade-in">
+            <a href="https://github.com/Cichlider" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+            <a href="mailto:cihlid1234@qq.com" title="Email"><i class="fas fa-envelope"></i></a>
+            <a href="https://linkedin.com" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            <a href="https://twitter.com/cichlid" target="_blank" title="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="https://wa.me" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+            <a href="skype:cichlid?chat" title="Skype"><i class="fab fa-skype"></i></a>
+        </div>
+    </div>
+</section>
+
+<div class="quote-container fade-in" id="quote-container"></div>
+<div>
+    <footer>
+        <p>&copy; 2024 Cichlid. All rights reserved.</p>
+    </footer>
+</div>
+
+<canvas id="fireworks-canvas"></canvas>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+<script>
+const quotes = [
+    "The only way to do great work is to love what you do. - Steve Jobs",
+    "Innovation distinguishes between a leader and a follower. - Steve Jobs",
+    "The future belongs to those who believe in the beauty of their dreams. - Eleanor Roosevelt",
+    "Education is the most powerful weapon which you can use to change the world. - Nelson Mandela"
+];
+
+let currentQuote = 0;
+
+function rotateQuotes() {
+    const quoteContainer = document.getElementById('quote-container');
+    gsap.to(quoteContainer, { 
+        opacity: 0, 
+        duration: 1, 
+        onComplete: () => {
+            quoteContainer.textContent = quotes[currentQuote];
+            gsap.to(quoteContainer, { opacity: 1, duration: 1 });
+            currentQuote = (currentQuote + 1) % quotes.length;
+        }
+    });
+}
+
+setInterval(rotateQuotes, 10000);
+rotateQuotes();
+
+const typedTextElement = document.querySelector('.typed-text');
+const welcomeTexts = [
+    "Exploring the frontiers of Science",
+    "Innovating for a better tomorrow",
+    "Pushing the boundaries of knowledge"
+];
+let currentText = 0;
+
+function typeText(text, index = 0) {
+    if (index < text.length) {
+        typedTextElement.textContent += text.charAt(index);
+        setTimeout(() => typeText(text, index + 1), 50);
+    } else {
+        setTimeout(deleteText, 500);
+    }
+}
+
+function deleteText() {
+    const text = typedTextElement.textContent;
+    if (text.length > 0) {
+        typedTextElement.textContent = text.slice(0, -1);
+        setTimeout(deleteText, 10);
+    } else {
+        currentText = (currentText + 1) % welcomeTexts.length;
+        setTimeout(() => typeText(welcomeTexts[currentText]), 500);
+    }
+}
+
+typeText(welcomeTexts[currentText]);
+
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('#side-nav a');
+
+function isElementInViewport(el) {
+    const rect = el.getBoundingClientRect();
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+}
+
+function handleScroll() {
+    sections.forEach((section, index) => {
+        if (isElementInViewport(section)) {
+            section.classList.add('visible');
+            navLinks.forEach(link => link.classList.remove('active'));
+            navLinks[index].classList.add('active');
+            fadeInElements(section);
+        }
+    });
+}
+
+function fadeInElements(section) {
+    const fadeElements = section.querySelectorAll('.fade-in:not(.visible)');
+    fadeElements.forEach((element, index) => {
+        setTimeout(() => {
+            element.classList.add('visible');
+        }, index * 200);
+    });
+}
+
+let lastScrollPosition = 0;
+const scrollThreshold = 100; // Adjust this value to control how often the animation triggers
+
+window.addEventListener('scroll', () => {
+    const currentScrollPosition = window.pageYOffset;
+    if (Math.abs(currentScrollPosition - lastScrollPosition) > scrollThreshold) {
+        handleScroll();
+        lastScrollPosition = currentScrollPosition;
+    }
+});
+
+// const backgrounds = [
+//     'url("background1.jpg")',
+//     'url("background2.jpg")',
+//     'url("background3.jpg")'
+// ];
+// let currentBackground = 0;
+
+// function changeBackground() {
+//     document.querySelector('.welcome').style.backgroundImage = backgrounds[currentBackground];
+//     currentBackground = (currentBackground + 1) % backgrounds.length;
+// }
+
+// setInterval(changeBackground, 10000);
+
+// Fireworks effect
+const canvas = document.getElementById('fireworks-canvas');
+const ctx = canvas.getContext('2d');
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+class Particle {
+    constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        this.radius = Math.random() * 2 + 1;
+        this.velocity = {
+            x: Math.random() * 6 - 3,
+            y: Math.random() * 6 - 3
+        };
+        this.life = 100;
+    }
+
+    draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+    }
+
+    update() {
+        this.x += this.velocity.x;
+        this.y += this.velocity.y;
+        this.life--;
+        this.radius -= 0.02;
+    }
+}
+
+let particles = [];
+
+function createFireworks(x, y) {
+    const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+    for (let i = 0; i < 100; i++) {
+        particles.push(new Particle(x, y, colors[Math.floor(Math.random() * colors.length)]));
+    }
+}
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles = particles.filter(particle => particle.life > 0 && particle.radius > 0);
+    particles.forEach(particle => {
+        particle.draw();
+        particle.update();
+    });
+    requestAnimationFrame(animate);
+}
+
+animate();
+
+document.addEventListener('click', (event) => {
+    createFireworks(event.clientX, event.clientY);
+});
+
+// Smooth scrolling for side navigation
+document.querySelectorAll('#side-nav a').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+        });
+    });
+});
+
+// Initial animation for visible sections
+sections.forEach(section => {
+    if (isElementInViewport(section)) {
+        section.classList.add('visible');
+        fadeInElements(section);
+    }
+});
+
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+
+</script>
+</body>
+</html>
