@@ -1,0 +1,15 @@
+---
+/**
+ * The Cichlid mark: an open "C" that is also a fish head — the gap is the
+ * mouth, the dot is the eye. `eye` makes the dot follow the pointer.
+ */
+interface Props {
+  eye?: boolean;
+  class?: string;
+}
+const { eye = false, class: className } = Astro.props;
+---
+<svg class:list={['mark', className]} viewBox="0 0 100 100" aria-hidden="true" data-eye={eye ? '' : undefined}>
+  <path class="mark__arc" d="M77.85 30.5A34 34 0 1 0 77.85 69.5" pathLength="1" />
+  <circle class="mark__eye" cx="50" cy="50" r="9" />
+</svg>

@@ -1,0 +1,33 @@
+---
+/**
+ * Masked pill button. Two identical layers are stacked: the hover layer is
+ * revealed by a rounded inset mask growing from just off-centre, while each
+ * layer's label (and arrow) slides out / in with it, so the new button seems
+ * to push through the old one. Hover-out plays the exact reverse.
+ */
+import Arrow from './Arrow.astro';
+import { en, type Key } from '../i18n/dict';
+
+interface Props {
+  href: string;
+  label: Key;
+  arrow?: 'right' | 'up-right' | 'left' | null;
+  external?: boolean;
+  /** On a dark (fg) surface, e.g. inside the menu. */
+  inverse?: boolean;
+  class?: string;
+  [attr: `data-${string}`]: string | undefined;
+}
+const { href, label, arrow = 'right', external = false, inverse = false, class: className, ...rest } = Astro.props;
+const ext = external ? { target: '_blank', rel: 'noopener noreferrer' } : {};
+---
+<a class:list={['pill', inverse && 'pill--inverse', className]} href={href} {...ext} {...rest}>
+  <span class="pill__layer pill__base">
+    <span class="pill__text"><span data-i18n={label}>{en[label]}</span></span>
+    {arrow && <span class="pill__icon"><Arrow dir={arrow} /></span>}
+  </span>
+  <span class="pill__layer pill__hover" aria-hidden="true">
+    <span class="pill__text"><span data-i18n={label}>{en[label]}</span></span>
+    {arrow && <span class="pill__icon"><Arrow dir={arrow} /></span>}
+  </span>
+</a>

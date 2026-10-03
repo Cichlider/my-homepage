@@ -1,0 +1,52 @@
+---
+import Mark from './Mark.astro';
+import Pill from './Pill.astro';
+import { en, type Key } from '../i18n/dict';
+import { href } from '../lib/url';
+
+const links: { key: Key; url: string }[] = [
+  { key: 'nav.work', url: href('#work') },
+  { key: 'nav.about', url: href('about') },
+  { key: 'nav.contact', url: '#contact' },
+];
+---
+<header class="header" id="header" transition:persist>
+  <a class="brand" href={href('')} aria-label="Cichlid — home">
+    <span class="brand__mark" data-magnetic><Mark eye /></span>
+    <span class="brand__word">cichlid</span>
+  </a>
+
+  <div class="menu" data-menu>
+    <div class="menu__goo" aria-hidden="true"><span class="menu__bg"></span></div>
+
+    <button class="menu__toggle" type="button" aria-expanded="false" aria-controls="menu-panel">
+      <span data-i18n="nav.menu">{en['nav.menu']}</span>
+      <span class="menu__icon" aria-hidden="true"><i></i><i></i></span>
+    </button>
+
+    <div class="menu__panel" id="menu-panel" inert>
+      <nav class="menu__nav" aria-label="Main">
+        {links.map((l) => (
+          <Pill class="menu__link" href={l.url} label={l.key} arrow={null} inverse data-menu-item="" />
+        ))}
+      </nav>
+      <div class="menu__foot" data-menu-item>
+        <div class="seg" role="group" aria-label="Language">
+          <button type="button" data-action="lang" data-lang="en" aria-pressed="true">EN</button>
+          <button type="button" data-action="lang" data-lang="zh" aria-pressed="false">中</button>
+        </div>
+        <span class="menu__tools">
+        <button class="menu__swatch" type="button" data-action="palette" aria-label={en['menu.palette']} title={en['menu.palette']}></button>
+        <button class="menu__theme" type="button" data-action="theme" title={en['menu.theme']}>
+          <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+            <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="1.8" />
+            <path d="M10 2a8 8 0 0 1 0 16Z" fill="currentColor" />
+          </svg>
+          <span class="sr-only" data-i18n="menu.theme">{en['menu.theme']}</span>
+        </button>
+        </span>
+      </div>
+    </div>
+  </div>
+
+</header>

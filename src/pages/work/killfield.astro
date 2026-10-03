@@ -1,0 +1,84 @@
+---
+import Base from '../../layouts/Base.astro';
+import Arrow from '../../components/Arrow.astro';
+import { en, type Key } from '../../i18n/dict';
+import { href } from '../../lib/url';
+
+const links: { key: Key; url: string }[] = [
+  { key: 'kf.play', url: 'https://cichlider.github.io/killfield/viewer/' },
+  { key: 'kf.board', url: 'https://cichlider.github.io/killfield/viewer/leaderboard.html' },
+  { key: 'kf.paper', url: 'https://cichlider.github.io/killfield/paper/' },
+  { key: 'kf.code', url: 'https://github.com/Cichlider/killfield' },
+];
+const facts: Key[] = ['kf.f1', 'kf.f2', 'kf.f3'];
+---
+<Base title="Killfield" description="Killfield — an AI arena built around Tank Trouble.">
+  <section class="page-hero">
+    <div class="hero__top t-meta">
+      <a class="ulink" href={href('')} data-intro="fade"><Arrow dir="left" /><span data-i18n="kf.back">{en['kf.back']}</span></a>
+      <span data-intro="fade" data-i18n="kf.case">{en['kf.case']}</span>
+    </div>
+    <h1 class="t-display page-hero__title" data-intro="lines">Killfield</h1>
+    <div class="split">
+      <span class="split__label t-meta" data-intro="fade" data-i18n="kf.tag">{en['kf.tag']}</span>
+      <div class="split__main">
+        <p class="t-lead" data-intro="fade" data-i18n="kf.desc">{en['kf.desc']}</p>
+        <ul class="facts">
+          {facts.map((k, i) => (
+            <li data-intro="fade"><span class="t-meta">0{i + 1}</span><span data-i18n={k}>{en[k]}</span></li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="arena" data-tone="inv">
+    <svg class="arena__svg" viewBox="0 0 1600 900" data-arena role="img" aria-label="Abstract animation of two agents moving through a maze">
+      <defs>
+        <pattern id="dots" width="40" height="40" patternUnits="userSpaceOnUse">
+          <circle cx="20" cy="20" r="1.6" fill="currentColor" />
+        </pattern>
+      </defs>
+      <rect x="60" y="60" width="1480" height="780" fill="url(#dots)" />
+      <g class="arena__walls" fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="round">
+        <rect x="60" y="60" width="1480" height="780" rx="4" />
+        <path d="M200 160H640M200 160V460M800 340V560M1400 740H960M1400 740V440M1100 60V200M420 840V740" />
+      </g>
+      <path id="kf-a" d="M300 450C300 270 660 270 660 450S300 630 300 450Z" fill="none" />
+      <path id="kf-b" d="M940 450C940 270 1300 270 1300 450S940 630 940 450Z" fill="none" />
+      <line class="arena__sight" data-sight x1="0" y1="0" x2="0" y2="0" />
+      <g data-tank="#kf-a">
+        <rect x="-34" y="-26" width="68" height="52" rx="10" fill="currentColor" />
+        <rect x="10" y="-6" width="46" height="12" rx="3" fill="currentColor" />
+      </g>
+      <g data-tank="#kf-b">
+        <rect x="-34" y="-26" width="68" height="52" rx="10" fill="none" stroke="currentColor" stroke-width="8" />
+        <rect x="10" y="-6" width="46" height="12" rx="3" fill="currentColor" />
+      </g>
+    </svg>
+    <p class="arena__caption t-meta"><span>Killfield / Live</span><span data-i18n="kf.arena">{en['kf.arena']}</span></p>
+  </section>
+
+  <section class="section">
+    <div class="section-head t-meta" data-reveal="up"><span data-i18n="kf.explore">{en['kf.explore']}</span><span>(04)</span></div>
+    <div class="rows">
+      {links.map((l, i) => (
+        <a class="row row--compact" href={l.url} target="_blank" rel="noopener noreferrer" data-cursor="cursor.open">
+          <span class="row__rule" data-reveal="rule"></span>
+          <span class="row__idx t-meta">0{i + 1}</span>
+          <span class="row__title t-h2" data-i18n={l.key}>{en[l.key]}</span>
+          <span class="row__arrow"><Arrow dir="up-right" /></span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <a class="row next" href={href('about')} data-cursor="cursor.view">
+      <span class="row__rule" data-reveal="rule"></span>
+      <span class="row__idx t-meta" data-i18n="next.label">{en['next.label']}</span>
+      <span class="row__title t-h1" data-i18n="nav.about">{en['nav.about']}</span>
+      <span class="row__arrow"><Arrow /></span>
+    </a>
+  </section>
+</Base>

@@ -1,0 +1,50 @@
+---
+import Base from '../layouts/Base.astro';
+import Arrow from '../components/Arrow.astro';
+import Pill from '../components/Pill.astro';
+import { en, type Key } from '../i18n/dict';
+import { href } from '../lib/url';
+
+const interests: Key[] = ['i.gameai', 'i.quant', 'i.visual', 'i.interaction'];
+---
+<Base title="About">
+  <section class="page-hero">
+    <div class="hero__top t-meta">
+      <span data-intro="fade" data-i18n="about.label">{en['about.label']}</span>
+      <span data-intro="fade">Canberra, AU</span>
+    </div>
+    <h1 class="t-h1 page-hero__statement" data-intro="lines" data-i18n="about.statement">{en['about.statement']}</h1>
+  </section>
+
+  <section class="section">
+    <div class="split">
+      <span class="split__label t-meta" data-reveal="up" data-i18n="about.bioLabel">{en['about.bioLabel']}</span>
+      <div class="split__main">
+        <p class="t-lead" data-reveal="up" data-i18n="about.body">{en['about.body']}</p>
+        <span data-reveal="up"><Pill class="more" href="https://github.com/Cichlider" label="about.github" arrow="up-right" external /></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head t-meta" data-reveal="up"><span data-i18n="about.interests">{en['about.interests']}</span><span>(04)</span></div>
+    <div class="rows">
+      {interests.map((k, i) => (
+        <div class="row row--compact">
+          <span class="row__rule" data-reveal="rule"></span>
+          <span class="row__idx t-meta">0{i + 1}</span>
+          <span class="row__title t-h2" data-i18n={k}>{en[k]}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <a class="row next" href={href('work/killfield')} data-cursor="cursor.view">
+      <span class="row__rule" data-reveal="rule"></span>
+      <span class="row__idx t-meta" data-i18n="next.label">{en['next.label']}</span>
+      <span class="row__title t-h1">Killfield</span>
+      <span class="row__arrow"><Arrow /></span>
+    </a>
+  </section>
+</Base>

@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import Mark from '../components/Mark.astro';
+import Pill from '../components/Pill.astro';
+import { en } from '../i18n/dict';
+import { href } from '../lib/url';
+---
+<Base title="404">
+  <section class="lost">
+    <div class="lost__mark" data-intro="mark"><Mark eye /></div>
+    <h1 class="t-display" data-intro="lines">404</h1>
+    <p class="t-lead" data-intro="fade" data-i18n="nf.title">{en['nf.title']}</p>
+    <span data-intro="fade"><Pill class="more" href={href('')} label="nf.back" /></span>
+  </section>
+</Base>

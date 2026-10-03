@@ -1,0 +1,24 @@
+---
+import Arrow from './Arrow.astro';
+import { en } from '../i18n/dict';
+---
+<footer class="footer" id="contact" data-tone="inv">
+  <div class="section-head t-meta" data-reveal="up">
+    <span data-i18n="contact.label">{en['contact.label']}</span>
+    <button type="button" class="ulink t-meta" data-action="top"><span data-i18n="contact.top">{en['contact.top']}</span></button>
+  </div>
+  <p class="t-lead" data-reveal="up" data-i18n="contact.prompt">{en['contact.prompt']}</p>
+  <a class="footer__cta t-display" href="mailto:cichlid1234@outlook.com" data-cursor="cursor.open">
+    <span data-reveal="lines" data-i18n="contact.cta">{en['contact.cta']}</span>
+    <span class="footer__circle" data-magnetic><Arrow dir="up-right" /></span>
+  </a>
+  <div class="footer__row" data-reveal="up">
+    <a class="ulink" href="mailto:cichlid1234@outlook.com">cichlid1234@outlook.com</a>
+    <span class="footer__links">
+      <a class="ulink" href="https://github.com/Cichlider" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a class="ulink" href="https://cichlider.github.io/killfield/viewer/" target="_blank" rel="noopener noreferrer">Killfield</a>
+    </span>
+    <span class="t-meta">© 2026 Cichlid — <span data-i18n="contact.credit">{en['contact.credit']}</span></span>
+  </div>
+  <div class="footer__wordwrap"><span class="footer__word" data-fit>cichlid</span></div>
+</footer>

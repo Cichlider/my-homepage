@@ -1,0 +1,55 @@
+---
+import Base from '../layouts/Base.astro';
+import Mark from '../components/Mark.astro';
+import Arrow from '../components/Arrow.astro';
+import Pill from '../components/Pill.astro';
+import Marquee from '../components/Marquee.astro';
+import { en } from '../i18n/dict';
+import { href } from '../lib/url';
+---
+<Base>
+  <section class="hero" data-hero>
+    <div class="hero__mark" data-intro="mark"><Mark eye /></div>
+    <h1 class="hero__title t-display" data-intro="lines" data-i18n="hero.title">{en['hero.title']}</h1>
+    <div class="hero__foot t-meta">
+      <span data-intro="fade">Portfolio — ©2026</span>
+    </div>
+  </section>
+
+  <Marquee items={['Game AI', 'Quant systems', 'Visual design', 'Interaction']} />
+
+  <section class="section" id="work">
+    <div class="section-head t-meta" data-reveal="up">
+      <span>01 / <span data-i18n="work.label">{en['work.label']}</span></span>
+      <span>(01)</span>
+    </div>
+    <div class="rows">
+      <a class="row" href={href('work/killfield')} data-cursor="cursor.view">
+        <span class="row__rule" data-reveal="rule"></span>
+        <span class="row__idx t-meta">01</span>
+        <span class="row__title t-h1">Killfield</span>
+        <span class="row__meta">
+          <span class="t-meta" data-i18n="kf.tag">{en['kf.tag']}</span>
+          <span data-i18n="kf.short">{en['kf.short']}</span>
+        </span>
+        <span class="row__arrow"><Arrow /></span>
+      </a>
+      <div class="row row--muted">
+        <span class="row__rule" data-reveal="rule"></span>
+        <span class="row__idx t-meta">02</span>
+        <span class="row__title t-h1" data-i18n="work.soonTitle">{en['work.soonTitle']}</span>
+        <span class="row__meta"><span class="t-meta" data-i18n="work.soon">{en['work.soon']}</span></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="split">
+      <span class="split__label t-meta" data-reveal="up">02 / <span data-i18n="about.label">{en['about.label']}</span></span>
+      <div class="split__main">
+        <h2 class="t-h2" data-reveal="lines" data-i18n="about.statement">{en['about.statement']}</h2>
+        <span data-reveal="up"><Pill class="more" href={href('about')} label="about.more" /></span>
+      </div>
+    </div>
+  </section>
+</Base>

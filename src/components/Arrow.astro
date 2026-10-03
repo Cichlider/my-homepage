@@ -1,0 +1,12 @@
+---
+/** Font-independent arrow; `dir` rotates it. */
+interface Props {
+  dir?: 'right' | 'up-right' | 'up' | 'down' | 'left';
+  class?: string;
+}
+const { dir = 'right', class: className } = Astro.props;
+const rotation = { right: 0, 'up-right': -45, up: -90, down: 90, left: 180 }[dir];
+---
+<svg class:list={['arrow', className]} viewBox="0 0 24 24" aria-hidden="true" style={`transform: rotate(${rotation}deg)`}>
+  <path d="M3 12h17M13 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square" />
+</svg>

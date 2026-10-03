@@ -1,0 +1,23 @@
+---
+import Mark from './Mark.astro';
+interface Props {
+  items: string[];
+}
+const { items } = Astro.props;
+// Each group is repeated so one group is always wider than the viewport.
+const group = [...items, ...items];
+---
+<div class="marquee" data-tone="inv" data-marquee aria-hidden="true">
+  <div class="marquee__track">
+    {[0, 1].map(() => (
+      <div class="marquee__group">
+        {group.map((item) => (
+          <>
+            <span>{item}</span>
+            <Mark />
+          </>
+        ))}
+      </div>
+    ))}
+  </div>
+</div>
