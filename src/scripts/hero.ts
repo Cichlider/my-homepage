@@ -89,6 +89,9 @@ uniform vec3 uPaper;
 uniform sampler2D uScene;
 uniform sampler2D uText;
 uniform float uHasText;
+uniform sampler2D uBrand;
+uniform vec4 uBrandRect;
+uniform vec4 uMenu;
 out vec4 o;
 void main() {
   vec2 p = vec2(gl_FragCoord.x, uRes.y * uDpr - gl_FragCoord.y) / uDpr;
@@ -106,9 +109,21 @@ void main() {
   f = min(f, 2.0);
   float w = clamp(fwidth(f), 1e-4, 0.5);
   float ink = smoothstep(1.0 - w, 1.0 + w, f);
+
+  // The canvas sits above the header; let the ink pass under the menu pill,
+  // which gets a paper-coloured rim where it sits in ink so it stays legible.
+  float rim = 0.0;
+  if (uMenu.z > 0.0) {
+    vec2 hb = uMenu.zw * 0.5;
+    float rr = min(hb.x, hb.y);
+    vec2 q = abs(p - uMenu.xy - hb) - hb + rr;
+    float md = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - rr;
+    rim = smoothstep(-0.75, 0.75, md) * (1.0 - smoothstep(2.25, 3.75, md));
+    ink *= smoothstep(-0.75, 0.75, md);
+  }
   if (ink <= 0.0) { o = vec4(0.0); return; }
 
-  // Ink, then the 3D model (premultiplied) with a paper-coloured outline so
+  // Ink, then the 3D models (premultiplied) with a paper-coloured outline so
   // its shadowed sides don't dissolve into the ink; then text inverts it all.
   vec2 suv = gl_FragCoord.xy / (uRes * uDpr);
   vec4 sc = texture(uScene, suv);
@@ -121,7 +136,13 @@ void main() {
   vec3 col = mix(uInk, uPaper, max(near - sc.a, 0.0));
   col = col * (1.0 - sc.a) + sc.rgb;
   float text = uHasText > 0.5 ? texture(uText, vec2(p.x / uRes.x, 1.0 - p.y / uRes.y)).a : 0.0;
+  // The header wordmark lives in its own small mask (it moves with the header).
+  vec2 bu = (p - uBrandRect.xy) / max(uBrandRect.zw, vec2(1.0));
+  if (uBrandRect.z > 0.0 && all(greaterThanEqual(bu, vec2(0.0))) && all(lessThanEqual(bu, vec2(1.0)))) {
+    text = max(text, texture(uBrand, vec2(bu.x, 1.0 - bu.y)).a);
+  }
   col = mix(col, uInk + uPaper - col, text);
+  col = mix(col, uPaper, rim);
   o = vec4(col, 1.0) * ink;
 }`;
 
@@ -175,6 +196,8 @@ function start(
   };
   readColors();
 
+  const markSvg = hero.querySelector<SVGSVGElement>('.hero__mark svg');
+
   // 3D world (orthographic, 1 unit = 1 CSS px, y up) ---------------------------
   const scene = new THREE.Scene();
   const cam = new THREE.OrthographicCamera(0, 1, 0, -1, -2000, 2000);
@@ -208,14 +231,21 @@ function start(
   // Smooth across the curved walls and bevel steps, crisp at the real corners.
   const ringGeo = toCreasedNormals(extruded, (40 / 180) * Math.PI);
   extruded.dispose();
-  const ring = new THREE.Mesh(ringGeo, ringMat);
 
   const eyeGeo = new THREE.SphereGeometry(1, 64, 48);
-  const bigEye = new THREE.Mesh(eyeGeo, eyeMat);
-  bigEye.position.z = 6;
-  const markGroup = new THREE.Group();
-  markGroup.add(ring, bigEye);
-  scene.add(markGroup);
+  const makeModel = () => {
+    const eye = new THREE.Mesh(eyeGeo, eyeMat);
+    eye.position.z = 6;
+    const group = new THREE.Group();
+    group.add(new THREE.Mesh(ringGeo, ringMat), eye);
+    scene.add(group);
+    return { group, eye };
+  };
+  // One model under the hero mark, a small twin under the header logo.
+  const models = [
+    { ...makeModel(), svg: markSvg },
+    { ...makeModel(), svg: document.querySelector<SVGSVGElement>('.brand__mark svg') },
+  ];
 
   // Compositor ---------------------------------------------------------------
   const blobData = new Float32Array(MAX_BLOBS * 4);
@@ -223,6 +253,12 @@ function start(
   const textTex = new THREE.CanvasTexture(textCanvas);
   textTex.generateMipmaps = false;
   textTex.minFilter = THREE.LinearFilter;
+  const brandWord = document.querySelector<HTMLElement>('.brand__word');
+  const brandCanvas = document.createElement('canvas');
+  const brandTex = new THREE.CanvasTexture(brandCanvas);
+  brandTex.generateMipmaps = false;
+  brandTex.minFilter = THREE.LinearFilter;
+  const BRAND_PAD = 6;
   const comp = new THREE.RawShaderMaterial({
     glslVersion: THREE.GLSL3,
     vertexShader: QUAD_VERT,
@@ -238,6 +274,9 @@ function start(
       uScene: { value: rt.texture },
       uText: { value: textTex },
       uHasText: { value: 0 },
+      uBrand: { value: brandTex },
+      uBrandRect: { value: new THREE.Vector4() },
+      uMenu: { value: new THREE.Vector4() },
     },
   });
   const quadScene = new THREE.Scene();
@@ -247,8 +286,6 @@ function start(
 
   // State --------------------------------------------------------------------
   const drops: Drop[] = [];
-  const markSvg = hero.querySelector<SVGSVGElement>('.hero__mark svg');
-  const domEye = markSvg?.querySelector<SVGCircleElement>('.mark__eye') ?? null;
   const pointer = { x: -9999, y: -9999, sx: -9999, sy: -9999, amt: 0, target: 0 };
   let W = 1;
   let H = 1;
@@ -274,22 +311,14 @@ function start(
   };
   resize();
 
-  /** Rasterise every visible character in the hero at its DOM position. */
-  const buildMask = () => {
-    const box = hero.getBoundingClientRect();
-    const tw = Math.round(W * dpr);
-    const th = Math.round(H * dpr);
-    if (textCanvas.width !== tw || textCanvas.height !== th) {
-      // A resized source needs fresh GPU storage, not a sub-image update.
-      textCanvas.width = tw;
-      textCanvas.height = th;
-      textTex.dispose();
-    }
-    const ctx = textCanvas.getContext('2d')!;
+  /** Draw every visible character under `root` at its DOM position, relative to `origin`. */
+  const rasterise = (root: HTMLElement, target: HTMLCanvasElement, origin: { left: number; top: number }, w: number, h: number) => {
+    const ctx = target.getContext('2d')!;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
     ctx.fillStyle = '#fff';
     const range = document.createRange();
-    const walker = document.createTreeWalker(hero, NodeFilter.SHOW_TEXT);
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
     for (let node = walker.nextNode(); node; node = walker.nextNode()) {
       const text = node as Text;
       const el = text.parentElement;
@@ -311,14 +340,38 @@ function start(
           let r: DOMRect | undefined;
           for (const box of range.getClientRects()) if (!r || box.width > r.width) r = box;
           if (r?.width) {
-            ctx.fillText(upper ? ch.toUpperCase() : ch, r.left - box.left, r.top - box.top + (r.height - asc - desc) / 2 + asc);
+            ctx.fillText(upper ? ch.toUpperCase() : ch, r.left - origin.left, r.top - origin.top + (r.height - asc - desc) / 2 + asc);
           }
         }
         i += ch.length;
       }
     }
+  };
+
+  const fit = (c: HTMLCanvasElement, tex: T.Texture, w: number, h: number) => {
+    const cw = Math.max(1, Math.round(w * dpr));
+    const ch = Math.max(1, Math.round(h * dpr));
+    if (c.width !== cw || c.height !== ch) {
+      // A resized source needs fresh GPU storage, not a sub-image update.
+      c.width = cw;
+      c.height = ch;
+      tex.dispose();
+    }
+  };
+
+  const buildMask = () => {
+    fit(textCanvas, textTex, W, H);
+    rasterise(hero, textCanvas, hero.getBoundingClientRect(), W, H);
     textTex.needsUpdate = true;
     u.uHasText.value = 1;
+    if (brandWord) {
+      const r = brandWord.getBoundingClientRect();
+      const w = r.width + BRAND_PAD * 2;
+      const h = r.height + BRAND_PAD * 2;
+      fit(brandCanvas, brandTex, w, h);
+      rasterise(brandWord, brandCanvas, { left: r.left - BRAND_PAD, top: r.top - BRAND_PAD }, w, h);
+      brandTex.needsUpdate = true;
+    }
     maskDirty = false;
   };
 
@@ -415,12 +468,13 @@ function start(
   hero.addEventListener('pointerleave', onLeave);
   hero.addEventListener('pointerdown', onDown);
 
-  const markRect = () => {
-    if (!markSvg) return null;
-    const m = markSvg.getBoundingClientRect();
+  const markRect = (svg: SVGSVGElement | null = markSvg) => {
+    if (!svg) return null;
+    const m = svg.getBoundingClientRect();
     const h = hero.getBoundingClientRect();
     return { x: m.left - h.left + m.width / 2, y: m.top - h.top + m.height / 2, unit: m.width / 100 };
   };
+  const menuBg = document.querySelector<HTMLElement>('.menu__bg');
 
   // After the intro, the first splat lands on the mark and opens the window onto its 3D model.
   const onIntro = () => {
@@ -490,23 +544,38 @@ function start(
     renderer.setRenderTarget(rt);
     renderer.setClearColor(0x000000, 0);
     renderer.clear();
+    const h = hero.getBoundingClientRect();
+    if (brandWord) {
+      const r = brandWord.getBoundingClientRect();
+      u.uBrandRect.value.set(r.left - h.left - BRAND_PAD, r.top - h.top - BRAND_PAD, r.width + BRAND_PAD * 2, r.height + BRAND_PAD * 2);
+    }
+    if (menuBg) {
+      const r = menuBg.getBoundingClientRect();
+      u.uMenu.value.set(r.left - h.left, r.top - h.top, r.width, r.height);
+    }
+
     if (n && m) {
-      // The model turns towards the pointer (or sways gently when it is away),
-      // showing its depth; the eyeball looks right at it.
+      // Each model turns towards the pointer (or sways gently when it is
+      // away), showing its depth; its eyeball looks right at it.
       const has = pointer.amt > 0.01;
-      const px = has ? pointer.sx : m.x - W * 0.25 * Math.sin(time * 0.6);
-      const py = has ? pointer.sy : m.y + H * 0.15 * Math.cos(time * 0.5);
-      markGroup.position.set(m.x, -m.y, 0);
-      markGroup.scale.setScalar(m.unit);
-      markGroup.rotation.set(
-        Math.max(-0.55, Math.min(0.55, ((py - m.y) / H) * 1.1)),
-        Math.max(-0.75, Math.min(0.75, ((px - m.x) / W) * 1.6)),
-        0,
-      );
-      target.set(px, -py, 700);
-      bigEye.lookAt(target);
-      const blink = domEye ? Number(gsap.getProperty(domEye, 'scaleY')) || 1 : 1;
-      bigEye.scale.set(14, 14 * blink, 14);
+      for (const model of models) {
+        const r = markRect(model.svg);
+        if (!r) continue;
+        const px = has ? pointer.sx : r.x - W * 0.25 * Math.sin(time * 0.6);
+        const py = has ? pointer.sy : r.y + H * 0.15 * Math.cos(time * 0.5);
+        model.group.position.set(r.x, -r.y, 0);
+        model.group.scale.setScalar(r.unit);
+        model.group.rotation.set(
+          Math.max(-0.55, Math.min(0.55, ((py - r.y) / H) * 1.1)),
+          Math.max(-0.75, Math.min(0.75, ((px - r.x) / W) * 1.6)),
+          0,
+        );
+        target.set(px, -py, 700);
+        model.eye.lookAt(target);
+        const domEye = model.svg?.querySelector('.mark__eye');
+        const blink = domEye ? Number(gsap.getProperty(domEye, 'scaleY')) || 1 : 1;
+        model.eye.scale.set(14, 14 * blink, 14);
+      }
       renderer.render(scene, cam);
     }
     renderer.setRenderTarget(null);
@@ -527,6 +596,7 @@ function start(
     [eyeGeo, ringGeo].forEach((g) => g.dispose());
     [ringMat, eyeMat, comp].forEach((mat) => mat.dispose());
     textTex.dispose();
+    brandTex.dispose();
     rt.dispose();
     renderer.dispose();
     renderer.forceContextLoss();
